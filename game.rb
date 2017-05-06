@@ -14,6 +14,8 @@ class Game
   attr_accessor :user, :diler
 
   def new_game
+    self.class.instance_variable_get(:@game_bank).clear
+
     puts "Игра BlackJack"
     print "Введите имя: "
     @user_name = gets.chomp
@@ -52,6 +54,8 @@ class Game
   end
 
   def total_points
+    @user.points_amount  = 0
+    @diler.points_amount = 0
     @user.cards.each  { |card| @user.points_amount  += card.point }
     @diler.cards.each { |card| @diler.points_amount += card.point }
   end
@@ -64,7 +68,6 @@ class Game
   end
 
   def user_turn
-    puts "Выберите действие:"
     puts "1. Пропустить ход"
     puts "2. Добавить карту"
     puts "3. Открыть карты"
