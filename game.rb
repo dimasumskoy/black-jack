@@ -33,7 +33,6 @@ class Game
     deal_cards
     total_points
     bet
-    user_turn
   end
 
   def create_user
@@ -54,8 +53,11 @@ class Game
   end
 
   def total_points
-    @user.points_amount  = 0
-    @diler.points_amount = 0
+    points_to_zero
+    count_points
+  end
+
+  def count_points
     @user.cards.each  { |card| @user.points_amount  += card.point }
     @diler.cards.each { |card| @diler.points_amount += card.point }
   end
@@ -69,8 +71,27 @@ class Game
 
   def user_turn
     puts "1. Пропустить ход"
-    puts "2. Добавить карту"
+    puts "2. Добавить карту" if @user.cards.size < 3
     puts "3. Открыть карты"
+    puts "4. Выход из игры"
     choice = gets.to_i
+  end
+
+  def diler_turn
+
+  end
+
+  def add_card(player)
+    player.take_card(Cards.new)
+    total_points
+  end
+
+  def show_cards
+
+  end
+
+  def points_to_zero
+    @user.points_amount  = 0
+    @diler.points_amount = 0
   end
 end
