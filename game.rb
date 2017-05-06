@@ -13,15 +13,25 @@ class Game
 
   attr_accessor :user, :diler
 
-  def start # Запрос имени, создание игроков, раздача карт, подсчет текущих очков
-    puts "Welcome to BlackJack"
-    print "Enter your name: "
+  def new_game
+    puts "Игра BlackJack"
+    print "Введите имя: "
     @user_name = gets.chomp
 
     create_user
     create_diler
+    start
+  end
+
+  def replay
+    start
+  end
+
+  def start
     deal_cards
     total_points
+    bet
+    user_turn
   end
 
   def create_user
@@ -49,5 +59,13 @@ class Game
     @user.money_amount  -= bet
     @diler.money_amount -= bet
     2.times { self.class.instance_variable_get(:@game_bank) << bet }
+  end
+
+  def user_turn
+    puts "Выберите действие:"
+    puts "1. Пропустить ход"
+    puts "2. Добавить карту"
+    puts "3. Открыть карты"
+    choice = gets.to_i
   end
 end
