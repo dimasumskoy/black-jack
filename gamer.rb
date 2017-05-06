@@ -8,7 +8,7 @@ class Gamer
     @points_amount = 0
   end
 
-  def take_card(card)
-    @cards << card
+  def take_card(*cards)
+    cards.each { |card| @cards << card }
   end
 end
