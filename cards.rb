@@ -11,7 +11,7 @@ class Cards
     suits.each do |suit|
       deck << @cards.collect { |card| card + suit }
     end
-    deck.flatten
+    deck.flatten!
   end
 
   attr_accessor :card, :point
@@ -29,5 +29,9 @@ class Cards
     else
       @point = @card.to_i
     end
+  end
+
+  def send_card(card)
+    self.class.deck.delete(card)
   end
 end
