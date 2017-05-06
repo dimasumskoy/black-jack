@@ -20,14 +20,14 @@ class Game
 
     create_user
     create_diler
-    start
+    init_game
   end
 
   def replay
-    start
+    init_game
   end
 
-  def start
+  def init_game
     deal_cards
     total_points
     bet
@@ -43,6 +43,8 @@ class Game
   end
 
   def deal_cards
+    @user.cards.clear
+    @diler.cards.clear
     2.times do
       @user.take_card(Cards.new)
       @diler.take_card(Cards.new)
