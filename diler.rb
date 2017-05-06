@@ -1,6 +1,6 @@
-require_relative 'gamer'
+require_relative 'player'
 
-class Diler < Gamer
+class Diler < Player
 
   def initialize
     @name = "Diler"

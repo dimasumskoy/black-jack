@@ -1,6 +1,6 @@
 require_relative 'cards'
 require_relative 'diler'
-require_relative 'gamer'
+require_relative 'player'
 require_relative 'user'
 
 class Game
@@ -16,7 +16,7 @@ class Game
   def start # Запрос имени, создание игроков, раздача карт, подсчет текущих очков
     puts "Welcome to BlackJack"
     print "Enter your name: "
-    @gamer_name = gets.chomp
+    @user_name = gets.chomp
 
     create_user
     create_diler
@@ -25,7 +25,7 @@ class Game
   end
 
   def create_user
-    @user = User.new(@gamer_name)
+    @user = User.new(@user_name)
   end
 
   def create_diler

@@ -1,4 +1,4 @@
-class Gamer
+class Player
   attr_accessor :name, :money_amount, :cards, :points_amount
 
   def initialize(*)
