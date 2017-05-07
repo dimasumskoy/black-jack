@@ -105,7 +105,7 @@ class Game
   def take_card_from_deck(player)
     @card = @deck[rand(0..52)]
     @deck.delete(@card)
-    if @card.card.start_with?("A") && player.points_amount > 10
+    if @card.type.start_with?("A") && player.points_amount > 10
       @card.point = 1
     end
     player.take_card(@card)
@@ -118,10 +118,14 @@ class Game
   end
 
   def show_user_cards
-    @player_cards = []
-    @user.cards.each { |card| @player_cards << card.card }
-    print "Player cards: #{@player_cards}\n"
+    @user_cards = []
+    @user.cards.each { |card| @user_cards << card.type }
+    print "Player cards: #{@user_cards}\n"
     print "Player points: #{@user.points_amount}\n"
+  end
+
+  def show_diler_cards
+    print "Diler cards: #{@diler.cards.map { |card| card = "*" }}\n"
   end
 
   def diler_turn
