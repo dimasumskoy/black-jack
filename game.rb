@@ -2,6 +2,7 @@ require_relative 'cards'
 require_relative 'diler'
 require_relative 'player'
 require_relative 'user'
+require_relative 'instance_counter'
 
 class Game
   @game_bet = 10
@@ -11,7 +12,7 @@ class Game
     @game_bank.reduce(:+)
   end
 
-  attr_accessor :user, :diler
+  attr_accessor :user, :diler, :deck
 
   def new_game
     self.class.instance_variable_get(:@game_bank).clear
@@ -20,6 +21,7 @@ class Game
     print "Введите имя: "
     @user_name = gets.chomp
 
+    reset_deck
     create_user
     create_diler
     init_game
@@ -47,8 +49,8 @@ class Game
     @user.cards.clear
     @diler.cards.clear
     2.times do
-      @user.take_card(Cards.new)
-      @diler.take_card(Cards.new)
+      take_card_from_deck(@user)
+      take_card_from_deck(@diler)
     end
   end
 
@@ -77,21 +79,27 @@ class Game
     choice = gets.to_i
   end
 
+  def points_to_zero
+    @user.points_amount  = 0
+    @diler.points_amount = 0
+  end
+
+  def reset_deck
+    @deck = []
+    52.times { @deck << Cards.new }
+  end
+
+  def take_card_from_deck(player)
+    @card = @deck[rand(0..52)]
+    player.take_card(@card)
+    @deck.delete(@card)
+  end
+
   def diler_turn
 
   end
 
-  def add_card(player)
-    player.take_card(Cards.new)
-    total_points
-  end
-
   def show_cards
 
-  end
-
-  def points_to_zero
-    @user.points_amount  = 0
-    @diler.points_amount = 0
   end
 end
