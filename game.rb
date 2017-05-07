@@ -21,7 +21,7 @@ class Game
     print "Введите имя: "
     @user_name = gets.chomp
 
-    reset_deck
+    update_deck
     create_user
     create_diler
     init_game
@@ -55,13 +55,11 @@ class Game
   end
 
   def total_points
-    points_to_zero
     count_points
   end
 
   def count_points
-    @user.points_amount  = 0
-    @diler.points_amount = 0
+    points_to_zero
     @user.cards.each  { |card| @user.points_amount  += card.point }
     @diler.cards.each { |card| @diler.points_amount += card.point }
   end
@@ -75,10 +73,23 @@ class Game
 
   def user_turn
     puts "1. Пропустить ход"
-    puts "2. Добавить карту" if @user.cards.size < 3
+    puts "2. Добавить карту"
+    puts "2. Добавить карту (недоступно)" if @user.cards.size >= 3
     puts "3. Открыть карты"
     puts "4. Выход из игры"
     choice = gets.to_i
+
+    case choice
+    when 1
+      diler_turn
+    when 2
+      take_card_from_deck(@user)
+    when 3
+      show_cards
+    when 4
+      puts "Goodbye"
+      exit
+    end
   end
 
   def points_to_zero
@@ -86,15 +97,18 @@ class Game
     @diler.points_amount = 0
   end
 
-  def reset_deck
+  def update_deck
     @deck = []
     52.times { @deck << Cards.new }
   end
 
   def take_card_from_deck(player)
     @card = @deck[rand(0..52)]
-    player.take_card(@card)
     @deck.delete(@card)
+    if @card.card.start_with?("A") && player.points_amount > 10
+      @card.point = 1
+    end
+    player.take_card(@card)
     count_points
   end
 
