@@ -60,6 +60,8 @@ class Game
   end
 
   def count_points
+    @user.points_amount  = 0
+    @diler.points_amount = 0
     @user.cards.each  { |card| @user.points_amount  += card.point }
     @diler.cards.each { |card| @diler.points_amount += card.point }
   end
@@ -93,6 +95,12 @@ class Game
     @card = @deck[rand(0..52)]
     player.take_card(@card)
     @deck.delete(@card)
+    count_points
+  end
+
+  def deck
+    @deck.each { |card| p card }
+    @deck.size
   end
 
   def diler_turn
