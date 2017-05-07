@@ -117,6 +117,13 @@ class Game
     @deck.size
   end
 
+  def show_user_cards
+    @player_cards = []
+    @user.cards.each { |card| @player_cards << card.card }
+    print "Player cards: #{@player_cards}\n"
+    print "Player points: #{@user.points_amount}\n"
+  end
+
   def diler_turn
 
   end
