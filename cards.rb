@@ -24,23 +24,23 @@ class Cards
     end
   end
 
-  attr_accessor :card, :point
+  attr_accessor :type, :point
 
   def initialize
     register_instance
     @index = self.class.instances
-    @card = self.class.deck[@index - 1]
+    @type = self.class.deck[@index - 1]
     count_point
     reset_instance
   end
 
   def count_point
-    if @card.start_with?("J", "Q", "K")
+    if @type.start_with?("J", "Q", "K")
       @point = 10
-    elsif @card.start_with?("A")
+    elsif @type.start_with?("A")
       @point = 11
     else
-      @point = @card.to_i
+      @point = @type.to_i
     end
   end
 
