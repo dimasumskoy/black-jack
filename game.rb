@@ -15,12 +15,11 @@ class Game
   attr_accessor :user, :diler, :deck
 
   def new_game
-    self.class.instance_variable_get(:@game_bank).clear
-
     puts "Игра BlackJack"
     print "Введите имя: "
     @user_name = gets.chomp
 
+    reset_game_bank
     update_deck
     create_user
     create_diler
@@ -88,7 +87,7 @@ class Game
           take_card_from_deck(@user)
         end
       when 3
-        show_cards
+        reveal_cards
       when 4
         puts "Goodbye"
         exit
@@ -107,12 +106,13 @@ class Game
   end
 
   def take_card_from_deck(player)
-    @card = @deck[rand(0..52)]
-    @deck.delete(@card)
+    i = @deck.size - 1
+    @card = @deck[rand(0..i)]
     if @card.type.start_with?("A") && player.points_amount > 10
       @card.point = 1
     end
     player.take_card(@card)
+    @deck.delete(@card)
     count_points
   end
 
@@ -152,7 +152,11 @@ class Game
     puts "4. Выход из игры"
   end
 
-  def show_cards
+  def reveal_cards
 
-  end  
+  end
+
+  def reset_game_bank
+    self.class.instance_variable_get(:@game_bank).clear
+  end
 end
