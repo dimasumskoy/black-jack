@@ -153,7 +153,21 @@ class Game
   end
 
   def reveal_cards
+    @diler_cards = []
+    @diler.cards.each { |card| @diler_cards << card.type }
+    print "Diler cards: #{@diler_cards}\n"
+    print "Diler points: #{@diler.points_amount}\n"
+    puts "------------"
+    show_user_cards
 
+    puts "Сыграть еще раз? (да/нет)"
+    answer = gets.chomp
+    if answer == "да".downcase
+      replay
+    else
+      puts "Пока!"
+      exit
+    end
   end
 
   def reset_game_bank
