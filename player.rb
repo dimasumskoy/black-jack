@@ -2,7 +2,6 @@ class Player
   attr_accessor :name, :money_amount, :cards, :points_amount
 
   def initialize(*)
-    @name
     @money_amount = 100
     @cards = []
     @points_amount = 0

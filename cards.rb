@@ -7,10 +7,10 @@ class Cards
 
   class << self
     def deck
-      @deck ||= cards_to_deck
+      @deck ||= cards_to_deck # помещаем все условные обозначения карт в условную колоду
     end
 
-    def cards_to_deck
+    def cards_to_deck # присоединяем каждому номиналу карты условное обозначение
       suits = %w(+ <3 ^ <>)
       deck = []
       suits.each do |suit|
@@ -18,21 +18,19 @@ class Cards
       end
       deck.flatten!
     end
-
-    def send_card(card)
-      @deck.delete(card)
-    end
   end
 
   attr_accessor :type, :point
 
   def initialize
     register_instance
-    @index = self.class.instances
+    @index = self.class.instances # для создания экземпляров карт и помещения их в колоду игры
     @type = self.class.deck[@index - 1]
     count_point
     reset_instance
   end
+
+  private
 
   def count_point
     if @type.start_with?("J", "Q", "K")
@@ -45,8 +43,6 @@ class Cards
   end
 
   def reset_instance
-    if self.class.instances > 51
-      self.class.instances = 0
-    end
+    self.class.instances = 0 if self.class.instances > 51
   end
 end

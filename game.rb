@@ -8,16 +8,6 @@ class Game
   @game_bet = 10
   @game_bank = []
 
-  attr_accessor :user, :diler, :deck
-
-  def bank_amount
-    self.class.instance_variable_get(:@game_bank).reduce(:+)
-  end
-
-  def reset_game_bank
-    self.class.instance_variable_get(:@game_bank).clear
-  end
-
   def new_game
     puts "Игра BlackJack"
     print "Введите имя: "
@@ -29,6 +19,18 @@ class Game
     init_game
   end
 
+  private
+
+  attr_accessor :user, :diler, :deck
+
+  def bank_amount
+    self.class.instance_variable_get(:@game_bank).reduce(:+)
+  end
+
+  def reset_game_bank
+    self.class.instance_variable_get(:@game_bank).clear
+  end
+
   def replay
     init_game
   end
@@ -37,6 +39,7 @@ class Game
     deal_cards
     total_points
     bet
+    user_turn
   end
 
   def create_user
@@ -94,10 +97,25 @@ class Game
       when 3
         reveal_cards
       when 4
-        puts "Goodbye"
+        new_game
+      when 5
+        puts "Пока!"
         exit
       end
     end
+  end
+
+  def show_menu
+    puts "Ход игрока"
+    puts "1. Пропустить ход"
+    if @user.cards.size >= 3
+      puts "2. Добавить карту (недоступно)"
+    else
+      puts "2. Добавить карту"
+    end
+    puts "3. Открыть карты"
+    puts "4. Начать игру заново"
+    puts "5. Выход из игры"
   end
 
   def points_to_zero
@@ -121,11 +139,6 @@ class Game
     count_points
   end
 
-  def deck
-    @deck.each { |card| p card }
-    @deck.size
-  end
-
   def show_user_cards
     @user_cards = []
     @user.cards.each { |card| @user_cards << card.type }
@@ -140,21 +153,9 @@ class Game
   def diler_turn
     if @diler.points_amount >= 17
       user_turn
-    else
+    elsif @diler.cards.size <= 3
       take_card_from_deck(@diler)
     end
-  end
-
-  def show_menu
-    puts "Ход игрока"
-    puts "1. Пропустить ход"
-    if @user.cards.size >= 3
-      puts "2. Добавить карту (недоступно)"
-    else
-      puts "2. Добавить карту"
-    end
-    puts "3. Открыть карты"
-    puts "4. Выход из игры"
   end
 
   def reveal_cards
@@ -164,7 +165,6 @@ class Game
     print "Очки дилера: #{@diler.points_amount}\n"
     puts "------------"
     show_user_cards
-
     determine_winner
     play_again
   end
@@ -216,3 +216,5 @@ class Game
     end
   end
 end
+
+Game.new.new_game
