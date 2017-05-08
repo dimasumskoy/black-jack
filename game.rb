@@ -92,7 +92,7 @@ class Game
           puts "У вас максимальное количество карт"
         else
           take_card_from_deck(@user)
-          diler_turn
+          diler_turn # ход дилера после хода игрока
         end
       when 3
         reveal_cards
@@ -125,14 +125,14 @@ class Game
 
   def update_deck
     @deck = []
-    52.times { @deck << Cards.new }
+    52.times { @deck << Cards.new } # помещаем все экземпляры карт в колоду игры
   end
 
   def take_card_from_deck(player)
     i = @deck.size - 1
     @card = @deck[rand(0..i)]
-    if @card.type.start_with?("A") && player.points_amount > 10
-      @card.point = 1
+    if @card.type.start_with?("A") && player.points_amount > 10 # присваиваем тузу единицу
+      @card.point = 1 
     end
     player.take_card(@card)
     @deck.delete(@card)
@@ -185,7 +185,7 @@ class Game
       puts "Выигрыш: #{@bet}"
       show_user_score
     end
-    reset_game_bank
+    reset_game_bank # деньги из банка перешли выигравшему, банк пуст
   end
 
   def user_victory
