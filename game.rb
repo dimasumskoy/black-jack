@@ -13,7 +13,6 @@ class Game
     print "Введите имя: "
     @user_name = gets.chomp
 
-    update_deck
     create_user
     create_diler
     init_game
@@ -36,6 +35,7 @@ class Game
   end
 
   def init_game
+    update_deck
     deal_cards
     total_points
     bet
