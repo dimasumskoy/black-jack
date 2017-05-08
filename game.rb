@@ -72,23 +72,27 @@ class Game
   end
 
   def user_turn
-    puts "1. Пропустить ход"
-    puts "2. Добавить карту"
-    puts "2. Добавить карту (недоступно)" if @user.cards.size >= 3
-    puts "3. Открыть карты"
-    puts "4. Выход из игры"
-    choice = gets.to_i
+    loop do
+      show_diler_cards
+      puts "------------"
+      show_user_cards
+      show_menu
 
-    case choice
-    when 1
-      diler_turn
-    when 2
-      take_card_from_deck(@user)
-    when 3
-      show_cards
-    when 4
-      puts "Goodbye"
-      exit
+      case @choice = gets.to_i
+      when 1
+        diler_turn
+      when 2
+        if @user.cards.size >= 3
+          puts "У вас максимальное количество карт"
+        else
+          take_card_from_deck(@user)
+        end
+      when 3
+        show_cards
+      when 4
+        puts "Goodbye"
+        exit
+      end
     end
   end
 
@@ -129,10 +133,26 @@ class Game
   end
 
   def diler_turn
+    if @diler.points_amount >= 17
+      user_turn
+    else
+      take_card_from_deck(@diler)
+    end
+  end
 
+  def show_menu
+    puts "Ход игрока"
+    puts "1. Пропустить ход"
+    if @user.cards.size >= 3
+      puts "2. Добавить карту (недоступно)"
+    else
+      puts "2. Добавить карту"
+    end
+    puts "3. Открыть карты"
+    puts "4. Выход из игры"
   end
 
   def show_cards
 
-  end
+  end  
 end
