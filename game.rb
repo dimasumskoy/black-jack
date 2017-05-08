@@ -8,18 +8,21 @@ class Game
   @game_bet = 10
   @game_bank = []
 
-  def self.game_bank
-    @game_bank.reduce(:+)
+  attr_accessor :user, :diler, :deck
+
+  def bank_amount
+    self.class.instance_variable_get(:@game_bank).reduce(:+)
   end
 
-  attr_accessor :user, :diler, :deck
+  def reset_game_bank
+    self.class.instance_variable_get(:@game_bank).clear
+  end
 
   def new_game
     puts "Игра BlackJack"
     print "Введите имя: "
     @user_name = gets.chomp
 
-    reset_game_bank
     update_deck
     create_user
     create_diler
@@ -64,10 +67,11 @@ class Game
   end
 
   def bet
-    bet = self.class.instance_variable_get(:@game_bet)
-    @user.money_amount  -= bet
-    @diler.money_amount -= bet
-    2.times { self.class.instance_variable_get(:@game_bank) << bet }
+    @bet = self.class.instance_variable_get(:@game_bet)
+    @bank = self.class.instance_variable_get(:@game_bank)
+    @user.money_amount  -= @bet
+    @diler.money_amount -= @bet
+    2.times { @bank << @bet }
   end
 
   def user_turn
@@ -85,6 +89,7 @@ class Game
           puts "У вас максимальное количество карт"
         else
           take_card_from_deck(@user)
+          diler_turn
         end
       when 3
         reveal_cards
@@ -124,12 +129,12 @@ class Game
   def show_user_cards
     @user_cards = []
     @user.cards.each { |card| @user_cards << card.type }
-    print "Player cards: #{@user_cards}\n"
-    print "Player points: #{@user.points_amount}\n"
+    print "Карты игрока: #{@user_cards}\n"
+    print "Очки игрока: #{@user.points_amount}\n"
   end
 
   def show_diler_cards
-    print "Diler cards: #{@diler.cards.map { |card| card = "*" }}\n"
+    print "Карты дилера: #{@diler.cards.map { |card| card = "*" }}\n"
   end
 
   def diler_turn
@@ -155,11 +160,52 @@ class Game
   def reveal_cards
     @diler_cards = []
     @diler.cards.each { |card| @diler_cards << card.type }
-    print "Diler cards: #{@diler_cards}\n"
-    print "Diler points: #{@diler.points_amount}\n"
+    print "Карты дилера: #{@diler_cards}\n"
+    print "Очки дилера: #{@diler.points_amount}\n"
     puts "------------"
     show_user_cards
 
+    determine_winner
+    play_again
+  end
+
+  def determine_winner
+    if @user.points_amount > @diler.points_amount && @user.points_amount <= 21
+      user_victory
+    elsif @diler.points_amount > @user.points_amount && @diler.points_amount <= 21
+      diler_victory
+    elsif @user.points_amount <= 21 && @diler.points_amount > 21
+      user_victory
+    elsif @diler.points_amount <= 21 && @user.points_amount > 21
+      diler_victory
+    elsif @user.points_amount == @diler.points_amount
+      puts "Ничья"
+      @user.money_amount  += @bet
+      @diler.money_amount += @bet
+      puts "Выигрыш: #{@bet}"
+      show_user_score
+    end
+    reset_game_bank
+  end
+
+  def user_victory
+    puts "Победил #{@user.name}!"
+    @user.money_amount += bank_amount
+    puts "Выигрыш: #{bank_amount}"
+    show_user_score
+  end
+
+  def diler_victory
+    puts "Победил Diler"
+    @diler.money_amount += bank_amount
+    show_user_score
+  end
+
+  def show_user_score
+    puts "Ваши деньги: #{@user.money_amount}"
+  end
+
+  def play_again
     puts "Сыграть еще раз? (да/нет)"
     answer = gets.chomp
     if answer == "да".downcase
@@ -168,9 +214,5 @@ class Game
       puts "Пока!"
       exit
     end
-  end
-
-  def reset_game_bank
-    self.class.instance_variable_get(:@game_bank).clear
   end
 end
