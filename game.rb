@@ -153,7 +153,7 @@ class Game
   def diler_turn
     if @diler.points_amount >= 17
       user_turn
-    elsif @diler.cards.size <= 3
+    elsif @diler.cards.size < 3
       take_card_from_deck(@diler)
     end
   end
