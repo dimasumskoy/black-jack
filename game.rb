@@ -25,6 +25,7 @@ class Game
   end
 
   def init_game
+    game_bank
     update_deck
     deal_cards
     count_points
@@ -56,12 +57,15 @@ class Game
   def count_points
     @user.points_amount  = 0
     @diler.points_amount = 0
-    @user.count_points
-    @diler.count_points
+    @user.count_player_points
+    @diler.count_player_points
+  end
+
+  def game_bank
+    @game_bank = 0
   end
 
   def bet
-    @game_bank ||= 0
     @user.money_amount  -= GAME_BET
     @diler.money_amount -= GAME_BET
     2.times { @game_bank += GAME_BET }
@@ -73,6 +77,7 @@ class Game
       puts "------------"
       @user.show_cards
       puts "------------"
+      puts "Банк игры: #{@game_bank}"
       show_menu
 
       case @choice = gets.to_i
@@ -128,45 +133,33 @@ class Game
     @diler.show_cards
     puts "------------"
     @user.show_cards
-
     determine_winner
     play_again
   end
 
   def determine_winner
-    if @user.points_amount > @diler.points_amount && @user.points_amount <= 21
-      user_victory
-    elsif @diler.points_amount > @user.points_amount && @diler.points_amount <= 21
-      diler_victory
-    elsif @user.points_amount <= 21 && @diler.points_amount > 21
-      user_victory
-    elsif @diler.points_amount <= 21 && @user.points_amount > 21
-      diler_victory
-    elsif @user.points_amount == @diler.points_amount
-      puts "Ничья"
-      @user.money_amount  += @bet
-      @diler.money_amount += @bet
-      puts "Выигрыш: #{@bet}"
-      show_user_score
+    user_points = @user.points_amount
+    diler_points = @diler.points_amount
+    if user_points > 21 && diler_points > 21 || user_points == diler_points
+      standoff
+    else
+      player = [@user, @diler].reject { |player| player.points_amount > 21 }
+      player_victory(player.max_by(&:points_amount))
     end
-    game_bank
   end
 
-  def user_victory
-    puts "Победил #{@user.name}!"
-    @user.money_amount += bank_amount
-    puts "Выигрыш: #{bank_amount}"
-    show_user_score
+  def player_victory(player)
+    player.money_amount += @game_bank
+    puts "Победил #{player.name}"
+    puts "Выигрыш: #{@game_bank}"
+    puts "Текущий счет: #{@user.money_amount}"
   end
 
-  def diler_victory
-    puts "Победил Diler"
-    @diler.money_amount += bank_amount
-    show_user_score
-  end
-
-  def show_user_score
-    puts "Ваши деньги: #{@user.money_amount}"
+  def standoff
+    puts "------------"
+    puts "Ничья"
+    puts "Выигрыш: #{GAME_BET}"
+    puts "Текущий счет: #{@user.money_amount}"
   end
 
   def play_again
