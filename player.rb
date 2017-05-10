@@ -25,7 +25,7 @@ class Player
     end
   end
 
-  def count_points
+  def count_player_points
     @cards.each { |card| self.points_amount += card.count_point }
   end
 end
