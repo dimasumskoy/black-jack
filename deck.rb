@@ -10,18 +10,20 @@ class Deck
     @cards = build_deck
   end
 
+  def take_card_from_deck(player)
+    @card = @cards[0]
+    @card.change_ace_point(player)
+    player.take_card(@card)
+    @cards.delete(@card)
+  end
+
+  private
+
   def build_deck
     SUITS.flat_map do |suit|
       VALUES.collect do |value|
         Cards.new(value + suit)
       end
     end.shuffle!
-  end
-
-  def take_card_from_deck(player)
-    @card = @cards[0]
-    @card.change_ace_point(player)
-    player.take_card(@card)
-    @cards.delete(@card)
   end
 end
