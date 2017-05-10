@@ -21,9 +21,7 @@ class Deck
   def take_card_from_deck(player)
     @card = @cards[0]
     @card.change_ace_point(player)
-
     player.take_card(@card)
     @cards.delete(@card)
-    @cards.shuffle!
   end
 end
