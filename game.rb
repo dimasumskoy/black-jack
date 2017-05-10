@@ -1,33 +1,31 @@
 require_relative 'cards'
+require_relative 'deck'
 require_relative 'diler'
 require_relative 'player'
 require_relative 'user'
-require_relative 'instance_counter'
 
 class Game
-  @game_bet = 10
-  @game_bank = []
+  GAME_BET = 10
 
   def new_game
     puts "Игра BlackJack"
     print "Введите имя: "
-    @user_name = gets.chomp
-
-    create_user
+    user_name = gets.chomp
+    create_user(user_name)
     create_diler
     init_game
   end
 
   private
 
-  attr_accessor :user, :diler, :deck
+  attr_accessor :user, :diler, :deck, :game_bank
 
   def bank_amount
-    self.class.instance_variable_get(:@game_bank).reduce(:+)
+    @game_bank.reduce(:+)
   end
 
   def reset_game_bank
-    self.class.instance_variable_get(:@game_bank).clear
+    @game_bank.clear
   end
 
   def replay
@@ -37,44 +35,43 @@ class Game
   def init_game
     update_deck
     deal_cards
-    total_points
+    count_points
     bet
     user_turn
   end
 
-  def create_user
-    @user = User.new(@user_name)
+  def create_user(name)
+    @user = User.new(name)
   end
 
   def create_diler
     @diler = Diler.new
   end
 
+  def update_deck
+    @deck = Deck.new
+  end
+
   def deal_cards
     @user.cards.clear
     @diler.cards.clear
     2.times do
-      take_card_from_deck(@user)
-      take_card_from_deck(@diler)
+      @deck.take_card_from_deck(@user)
+      @deck.take_card_from_deck(@diler)
     end
-  end
-
-  def total_points
-    count_points
   end
 
   def count_points
     points_to_zero
-    @user.cards.each  { |card| @user.points_amount  += card.point }
-    @diler.cards.each { |card| @diler.points_amount += card.point }
+    @user.cards.each  { |card| @user.points_amount  += card.count_point }
+    @diler.cards.each { |card| @diler.points_amount += card.count_point }
   end
 
   def bet
-    @bet = self.class.instance_variable_get(:@game_bet)
-    @bank = self.class.instance_variable_get(:@game_bank)
-    @user.money_amount  -= @bet
-    @diler.money_amount -= @bet
-    2.times { @bank << @bet }
+    @game_bank = []
+    @user.money_amount  -= GAME_BET
+    @diler.money_amount -= GAME_BET
+    2.times { @game_bank << GAME_BET }
   end
 
   def user_turn
@@ -92,7 +89,7 @@ class Game
           puts "У вас максимальное количество карт"
         else
           take_card_from_deck(@user)
-          diler_turn # ход дилера после хода игрока
+          diler_turn
         end
       when 3
         reveal_cards
@@ -123,15 +120,10 @@ class Game
     @diler.points_amount = 0
   end
 
-  def update_deck
-    @deck = []
-    52.times { @deck << Cards.new } # помещаем все экземпляры карт в колоду игры
-  end
-
   def take_card_from_deck(player)
     i = @deck.size - 1
     @card = @deck[rand(0..i)]
-    if @card.type.start_with?("A") && player.points_amount > 10 # присваиваем тузу единицу
+    if @card.type.start_with?("A") && player.points_amount > 10
       @card.point = 1 
     end
     player.take_card(@card)
@@ -185,7 +177,7 @@ class Game
       puts "Выигрыш: #{@bet}"
       show_user_score
     end
-    reset_game_bank # деньги из банка перешли выигравшему, банк пуст
+    reset_game_bank
   end
 
   def user_victory
