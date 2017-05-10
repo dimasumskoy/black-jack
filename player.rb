@@ -16,7 +16,7 @@ class Player
   def show_cards
     player_cards = []
     @cards.each { |card| player_cards << card.type }
-    if self.name == "Diler"
+    if self.name == "Dealer"
       puts "Карты дилера: #{player_cards}"
       puts "Очки дилера: #{self.points_amount}"
     else
