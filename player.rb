@@ -17,9 +17,15 @@ class Player
     player_cards = []
     @cards.each { |card| player_cards << card.type }
     if self.name == "Diler"
-      print "Карты дилера: #{player_cards}\n"
+      puts "Карты дилера: #{player_cards}"
+      puts "Очки дилера: #{self.points_amount}"
     else
-      print "Карты игрока: #{player_cards}\n"
+      puts "Карты игрока: #{player_cards}"
+      puts "Очки игрока: #{self.points_amount}"
     end
+  end
+
+  def count_points
+    @cards.each { |card| self.points_amount += card.count_point }
   end
 end
