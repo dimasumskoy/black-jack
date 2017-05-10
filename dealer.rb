@@ -1,8 +1,8 @@
 require_relative 'player'
 
-class Diler < Player
+class Dealer < Player
   def initialize
-    @name = "Diler"
+    @name = "Dealer"
     super
   end
 end
