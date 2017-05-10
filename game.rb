@@ -82,14 +82,7 @@ class Game
 
       case @choice
       when 1 then dealer_turn
-      when 2
-        if @user.cards.size >= 3
-          puts "У вас максимальное количество карт"
-        else
-          @deck.take_card_from_deck(@user)
-          count_points
-          dealer_turn
-        end
+      when 2 then user_add_card
       when 3 then reveal_cards
       when 4 then new_game
       when 5 then puts "Пока!"; exit
@@ -109,6 +102,16 @@ class Game
     puts "4. Начать игру заново"
     puts "5. Выход из игры"
     @choice = gets.to_i
+  end
+
+  def user_add_card
+    if @user.cards.size >= 3
+      puts "У вас максимальное количество карт"
+    else
+      @deck.take_card_from_deck(@user)
+      count_points
+      dealer_turn
+    end
   end
 
   def hide_dealer_cards
@@ -162,12 +165,7 @@ class Game
   def play_again
     puts "Сыграть еще раз? (да/нет)"
     answer = gets.chomp
-    if answer == "да".downcase
-      init_game
-    else
-      puts "Пока!"
-      exit
-    end
+    answer == "да".downcase ? init_game : (puts "Пока!"; exit)
   end
 end
 
