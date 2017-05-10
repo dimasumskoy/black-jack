@@ -7,28 +7,20 @@ require_relative 'user'
 class Game
   GAME_BET = 10
 
-  def new_game
-    puts "Игра BlackJack"
-    print "Введите имя: "
-    user_name = gets.chomp
-    create_user(user_name)
-    create_diler
-    init_game
+  def initialize
+    new_game
   end
 
   private
 
   attr_accessor :user, :diler, :deck, :game_bank
 
-  def bank_amount
-    @game_bank.reduce(:+)
-  end
-
-  def reset_game_bank
-    @game_bank.clear
-  end
-
-  def replay
+  def new_game
+    puts "Игра BlackJack"
+    print "Введите имя: "
+    user_name = gets.chomp
+    create_user(user_name)
+    create_diler
     init_game
   end
 
@@ -62,23 +54,25 @@ class Game
   end
 
   def count_points
-    points_to_zero
-    @user.cards.each  { |card| @user.points_amount  += card.count_point }
-    @diler.cards.each { |card| @diler.points_amount += card.count_point }
+    @user.points_amount  = 0
+    @diler.points_amount = 0
+    @user.count_points
+    @diler.count_points
   end
 
   def bet
-    @game_bank = []
+    @game_bank ||= 0
     @user.money_amount  -= GAME_BET
     @diler.money_amount -= GAME_BET
-    2.times { @game_bank << GAME_BET }
+    2.times { @game_bank += GAME_BET }
   end
 
   def user_turn
     loop do
-      show_diler_cards
+      hide_diler_cards
       puts "------------"
-      show_user_cards
+      @user.show_cards
+      puts "------------"
       show_menu
 
       case @choice = gets.to_i
@@ -88,13 +82,14 @@ class Game
         if @user.cards.size >= 3
           puts "У вас максимальное количество карт"
         else
-          take_card_from_deck(@user)
+          @deck.take_card_from_deck(@user)
+          count_points
           diler_turn
         end
       when 3
         reveal_cards
       when 4
-        new_game
+        self.class.new
       when 5
         puts "Пока!"
         exit
@@ -115,48 +110,25 @@ class Game
     puts "5. Выход из игры"
   end
 
-  def points_to_zero
-    @user.points_amount  = 0
-    @diler.points_amount = 0
-  end
-
-  def take_card_from_deck(player)
-    i = @deck.size - 1
-    @card = @deck[rand(0..i)]
-    if @card.type.start_with?("A") && player.points_amount > 10
-      @card.point = 1 
-    end
-    player.take_card(@card)
-    @deck.delete(@card)
-    count_points
-  end
-
-  def show_user_cards
-    @user_cards = []
-    @user.cards.each { |card| @user_cards << card.type }
-    print "Карты игрока: #{@user_cards}\n"
-    print "Очки игрока: #{@user.points_amount}\n"
-  end
-
-  def show_diler_cards
-    print "Карты дилера: #{@diler.cards.map { |card| card = "*" }}\n"
+  def hide_diler_cards
+    hidden_cards = @diler.cards.collect { "*" }
+    puts "Карты дилера: #{hidden_cards}"
   end
 
   def diler_turn
     if @diler.points_amount >= 17
       user_turn
     elsif @diler.cards.size < 3
-      take_card_from_deck(@diler)
+      @deck.take_card_from_deck(@diler)
+      count_points
     end
   end
 
   def reveal_cards
-    @diler_cards = []
-    @diler.cards.each { |card| @diler_cards << card.type }
-    print "Карты дилера: #{@diler_cards}\n"
-    print "Очки дилера: #{@diler.points_amount}\n"
+    @diler.show_cards
     puts "------------"
-    show_user_cards
+    @user.show_cards
+
     determine_winner
     play_again
   end
@@ -177,7 +149,7 @@ class Game
       puts "Выигрыш: #{@bet}"
       show_user_score
     end
-    reset_game_bank
+    game_bank
   end
 
   def user_victory
@@ -201,7 +173,7 @@ class Game
     puts "Сыграть еще раз? (да/нет)"
     answer = gets.chomp
     if answer == "да".downcase
-      replay
+      init_game
     else
       puts "Пока!"
       exit
@@ -209,4 +181,4 @@ class Game
   end
 end
 
-Game.new.new_game
+Game.new
