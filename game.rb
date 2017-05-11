@@ -25,6 +25,7 @@ class Game
   end
 
   def init_game
+    new_game if @user.money_amount.zero?
     game_bank
     update_deck
     deal_cards
@@ -73,7 +74,7 @@ class Game
 
   def user_turn
     loop do
-      hide_dealer_cards
+      @dealer.hide_cards
       puts "------------"
       @user.show_cards
       puts "------------"
@@ -114,11 +115,6 @@ class Game
     end
   end
 
-  def hide_dealer_cards
-    hidden_cards = @dealer.cards.collect { "*" }
-    puts "Карты дилера: #{hidden_cards}"
-  end
-
   def dealer_turn
     if @dealer.points_amount >= 17
       user_turn
@@ -152,14 +148,14 @@ class Game
     puts "------------"
     puts "Победил #{player.name}"
     puts "Выигрыш: #{@game_bank}"
-    puts "Текущий счет: #{@user.money_amount}"
+    puts "Текущий счет игрока: #{@user.money_amount}"
   end
 
   def standoff
     puts "------------"
     puts "Ничья"
     puts "Выигрыш: #{GAME_BET}"
-    puts "Текущий счет: #{@user.money_amount}"
+    puts "Текущий счет игрока: #{@user.money_amount}"
   end
 
   def play_again
